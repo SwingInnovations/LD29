@@ -53,7 +53,7 @@ private:
     SDL_Window *m_Window = NULL;
     SDL_Renderer *m_Renderer = NULL;
     
-    unsigned int delta;
+    unsigned int delta, MAX_REWARD, rewardAmt;
     
     bool CloseRequested, CompleteSuccess, GameOver, GamePlay, MenuScreen, HelpScreen;
     std::vector<Ground*> BlocksY;
@@ -61,6 +61,7 @@ private:
     std::vector<Entity*> LizardWorms;
     std::vector<Entity*> Reward;
     Entity* player; //Player
+    Entity* playerFoot;
     
 
 };

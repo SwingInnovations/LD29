@@ -99,7 +99,7 @@ public:
     Vector2D GetDimensionVector(){ return dimension; }
     
 private:
-    bool IsPassable, IsValuable;
+    bool IsPassable, IsValuable, OnGround;
     SDL_Rect rect;
     Vector2D position, dimension;
     int health, direction;

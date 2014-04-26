@@ -31,8 +31,12 @@ void GameWindow::Init(const std::string& title, const int WIDTH, const int HEIGH
     MenuScreen = true;
     HelpScreen = false;
     
-    player = new Entity(Vector2D( 64.0, 8.0), Vector2D(60, 60));
+    MAX_REWARD = 0;
+    rewardAmt = 0;
+    
+    player = new Entity(Vector2D( 64.0, 8.0), Vector2D(60, 58));
     player->SetHealth(80);
+    playerFoot = new Entity(Vector2D(player->GetPositionVector().GetX(), player->GetPositionVector().GetY() + player->GetDimensionVector().GetY()-2), Vector2D(60, 2));
 }
 
 void GameWindow::PopulateWorld(unsigned int TileAmtX, unsigned int TileAmtY)
@@ -69,15 +73,14 @@ void GameWindow::PopulateWorld(unsigned int TileAmtX, unsigned int TileAmtY)
             unsigned int RandY = rand() % Ty;
             BlocksY[RandY]->BlockX[RandX]->SetPassable(true);
             if(BlocksY[k]->BlockX[l]->GetPassable()){
-                unsigned int RandX2 = rand() % Tx;
-                unsigned int RandY2 = rand() % Ty;
-                BlocksY[RandY2]->BlockX[RandX2]->SetValuable(true);
+                unsigned int Vx = rand() % Tx;
+                unsigned int Vy = rand() % Ty;
+                BlocksY[Vy]->BlockX[Vx]->SetValuable(true);
             }
             if(k > 0)
             {
                 BlocksY[k]->BlockX[l]->SetPosY(BlocksY[k-1]->BlockX[l]->GetPositionVector().GetY() + BlocksY[k-1]->BlockX[l]->GetDimensionVector().GetY());
             }
-            //TODO randomize world
         }    
     }
 }
@@ -117,41 +120,53 @@ void GameWindow::Update(SDL_Event e)
                     float _x = player->GetPositionVector().GetX();
                     _x -= 0.25f * delta;
                     player->SetPosX(_x);
+                    playerFoot->SetPosX(_x);
                 }else{
                     float _x = player->GetPositionVector().GetX();
                     _x += 0.0;
                     player->SetPosX(_x);
+                    playerFoot->SetPosX(_x);
                 }
                 if(e.key.keysym.sym == SDLK_d || e.key.keysym.sym == SDLK_RIGHT)
                 {
                     float _x = player->GetPositionVector().GetX();
                     _x += 0.25f * delta;
                     player->SetPosX(_x);
+                    playerFoot->SetPosX(_x);
                 }else{
                     float _x = player->GetPositionVector().GetX();
                     _x += 0.0;
                     player->SetPosX(_x);
+                    playerFoot->SetPosX(_x);
                 }
                 if(e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_UP)
                 {
                     float _y = player->GetPositionVector().GetY();
                     _y -= 0.25f * delta;
                     player->SetPosY(_y);
+                    playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }else{
                     float _y = player->GetPositionVector().GetY();
                     _y -= 0.0;
-                    player->SetPosY(_y);
+                    playerFoot->SetPosY(_y);
+                    playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }
                 if(e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_DOWN)
                 {
                     float _y = player->GetPositionVector().GetY();
                     _y += 0.25f * delta;
                     player->SetPosY(_y);
+                    playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }else{
                     float _y = player->GetPositionVector().GetY();
                     _y += 0.0;
                     player->SetPosY(_y);
+                    playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }
+                
+                
+                
+                /*End of Handling events in Gameplay*/
             }
         }else{
             //Handle what happens if game is over
@@ -192,9 +207,7 @@ void GameWindow::Render()
                         SDL_Rect rect = BlocksY[i]->BlockX[j]->GetRect();
                         SDL_RenderDrawRect(m_Renderer, &rect);
                     }else{
-//                        SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, 0);
-//                        SDL_Rect rect = BlocksY[i]->BlockX[j]->GetRect();
-//                        SDL_RenderDrawRect(m_Renderer, &rect);
+                        
                     }
                     
                     if(BlocksY[i]->BlockX[j]->GetValuable() == true)
@@ -208,6 +221,9 @@ void GameWindow::Render()
             SDL_SetRenderDrawColor(m_Renderer, 0, 255, 0, 255);
             SDL_Rect playerRect = player->GetRect();
             SDL_RenderDrawRect(m_Renderer, &playerRect);
+            SDL_SetRenderDrawColor(m_Renderer, 255, 255, 0, 255);
+            SDL_Rect playerFootRect = playerFoot->GetRect();
+            SDL_RenderDrawRect(m_Renderer, &playerFootRect);
             
             SDL_RenderPresent(m_Renderer);
         }
@@ -218,6 +234,11 @@ void GameWindow::Render()
 
 void GameWindow::Quit()
 {
+    for(unsigned int i = 0; i < BlocksY.size(); i++)
+    {
+        BlocksY[i]->BlockX.clear();
+    }
+    BlocksY.clear();
     SDL_DestroyRenderer(m_Renderer);
     SDL_DestroyWindow(m_Window);
     player = 0;
