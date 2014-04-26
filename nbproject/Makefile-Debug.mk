@@ -35,15 +35,16 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/GameWindow.o \
 	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-m32
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-m32
+CXXFLAGS=-m32
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -52,7 +53,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -61,6 +62,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ld29.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ld29 ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/GameWindow.o: GameWindow.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GameWindow.o GameWindow.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
