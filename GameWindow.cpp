@@ -34,9 +34,9 @@ void GameWindow::Init(const std::string& title, const int WIDTH, const int HEIGH
     MAX_REWARD = 0;
     rewardAmt = 0;
     
-    player = new Entity(Vector2D( 64.0, 8.0), Vector2D(60, 58));
+    player = new Entity(Vector2D( 64.0, 8.0), Vector2D(30, 48));
     player->SetHealth(80);
-    playerFoot = new Entity(Vector2D(player->GetPositionVector().GetX(), player->GetPositionVector().GetY() + player->GetDimensionVector().GetY()-2), Vector2D(60, 2));
+    playerFoot = new Entity(Vector2D(player->GetPositionVector().GetX(), player->GetPositionVector().GetY() + player->GetDimensionVector().GetY()-2), Vector2D(30, 2));
 }
 
 void GameWindow::PopulateWorld(unsigned int TileAmtX, unsigned int TileAmtY)
@@ -242,6 +242,7 @@ void GameWindow::Quit()
     SDL_DestroyRenderer(m_Renderer);
     SDL_DestroyWindow(m_Window);
     player = 0;
+    playerFoot = 0;
     m_Renderer = 0;
     m_Window = 0;
     SDL_Quit();
