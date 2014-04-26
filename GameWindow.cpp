@@ -85,6 +85,24 @@ void GameWindow::PopulateWorld(unsigned int TileAmtX, unsigned int TileAmtY)
     }
 }
 
+void GameWindow::PopulateEnemies(unsigned int num)
+{
+    for(unsigned int i = 0; i < num; i++)
+    {
+        Worms.push_back(new Entity(Vector2D(0.0, 0.0), Vector2D(96.0, 48.0)));
+        LizardWorms.push_back(new Entity(Vector2D(0.0, 0.0), Vector2D(96.0, 48.0)));
+    }
+    //TODO: Random Position
+}
+
+void GameWindow::PopulateReward(unsigned int num){
+    for(unsigned int i = 0; i < num; i++)
+    {
+        Reward.push_back(new Entity(Vector2D(0.0, 0.0), Vector2D(32, 32)));
+    }
+    //TODO: Random Position
+}
+
 void GameWindow::Update(SDL_Event e)
 {
     int x, y;
@@ -112,13 +130,13 @@ void GameWindow::Update(SDL_Event e)
                     }
                 }
             }else{
-                //Handle Gameplay
+                /*-Handle Gameplay Events-*/
                 
                 /*--Player Movement--*/
                 if(e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_LEFT)
                 {
                     float _x = player->GetPositionVector().GetX();
-                    _x -= 0.25f * delta;
+                    _x -= 0.25f;
                     player->SetPosX(_x);
                     playerFoot->SetPosX(_x);
                 }else{
@@ -130,9 +148,10 @@ void GameWindow::Update(SDL_Event e)
                 if(e.key.keysym.sym == SDLK_d || e.key.keysym.sym == SDLK_RIGHT)
                 {
                     float _x = player->GetPositionVector().GetX();
-                    _x += 0.25f * delta;
+                    _x += 0.25f;
                     player->SetPosX(_x);
                     playerFoot->SetPosX(_x);
+                    std::cout << "Key Pressed" << std::endl;
                 }else{
                     float _x = player->GetPositionVector().GetX();
                     _x += 0.0;
@@ -142,7 +161,7 @@ void GameWindow::Update(SDL_Event e)
                 if(e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_UP)
                 {
                     float _y = player->GetPositionVector().GetY();
-                    _y -= 0.25f * delta;
+                    _y -= 0.25f;
                     player->SetPosY(_y);
                     playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }else{
@@ -154,7 +173,7 @@ void GameWindow::Update(SDL_Event e)
                 if(e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_DOWN)
                 {
                     float _y = player->GetPositionVector().GetY();
-                    _y += 0.25f * delta;
+                    _y += 0.25f;
                     player->SetPosY(_y);
                     playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }else{
@@ -163,9 +182,56 @@ void GameWindow::Update(SDL_Event e)
                     player->SetPosY(_y);
                     playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
                 }
+                /*-Enemy Detection-*/
+                if(!Worms.empty() && !LizardWorms.empty()){
+                    for(unsigned int a = 0; a < Worms.size(); a++)
+                    {
+                        for(unsigned int b = 0; b < LizardWorms.size(); b++)
+                        {
+                            if(player->Intersected(*Worms[a]) || player->Intersected(*LizardWorms[b]))
+                            {
+                                player->SetHealth(0.0);
+                            }
+                        }
+                    }
+                }
                 
-                
-                
+//                for(unsigned int i = 0; i < BlocksY.size(); i++)
+//                {
+//                    for(unsigned int j = 0; j < BlocksY[0]->BlockX.size(); j++)
+//                    {
+//                        if(CheckEnvironment(*playerFoot, *BlocksY[i]->BlockX[j]))
+//                        {
+//                            float _y = player->GetPositionVector().GetY();
+//                            y += 0.0;
+//                            player->SetPosY(_y);
+//                            playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
+//                            std::cout << "Hit da Wall" << std::endl;
+//                        }else{
+//                            float _y = player->GetPositionVector().GetY();
+//                            y += 1;
+//                            player->SetPosY(_y);
+//                            playerFoot->SetPosY(_y + player->GetDimensionVector().GetY());
+//                            std::cout << "Falling" << std::endl;
+//                        }
+//                    }
+//                }
+                for(unsigned int r = 0; r < Reward.size(); r++)
+                {
+                    if(r < 0)
+                    {
+                        if(Reward[r]->Intersected(*player));
+                        {
+                            std::cout << "Intersection" << std::endl;
+                            Reward.erase(Reward.begin() + r);
+                        }
+                        if(Reward.empty())
+                        {
+                            GameOver = true;
+                            CompleteSuccess = true;
+                        }
+                    }
+                }
                 /*End of Handling events in Gameplay*/
             }
         }else{
@@ -218,6 +284,14 @@ void GameWindow::Render()
                     }
                 }
             }
+            
+            for(unsigned int r = 0; r < Reward.size(); r++)
+            {
+                SDL_SetRenderDrawColor(m_Renderer, 224, 169, 0, 255);
+                SDL_Rect rect = Reward[r]->GetRect();
+                SDL_RenderDrawRect(m_Renderer, &rect);
+            }
+            
             SDL_SetRenderDrawColor(m_Renderer, 0, 255, 0, 255);
             SDL_Rect playerRect = player->GetRect();
             SDL_RenderDrawRect(m_Renderer, &playerRect);
@@ -239,6 +313,8 @@ void GameWindow::Quit()
         BlocksY[i]->BlockX.clear();
     }
     BlocksY.clear();
+    Worms.clear();
+    LizardWorms.clear();
     SDL_DestroyRenderer(m_Renderer);
     SDL_DestroyWindow(m_Window);
     player = 0;
@@ -254,11 +330,26 @@ void GameWindow::CalcDelta()
     Uint32 lastFrame, currentFrame;
     lastFrame = currentFrame;
     currentFrame = SDL_GetTicks();
-    unsigned int tempDelta = (lastFrame - currentFrame)/10000000 + 24;
+    unsigned int tempDelta = (lastFrame - currentFrame)/1000000 + 80;
     if(tempDelta <= 30)
     {
         delta = tempDelta;
+        std::cout << "SDL_GetTicks: " << SDL_GetTicks() << std::endl;
         std::cout << delta << std::endl;
+    }
+}
+
+
+bool GameWindow::CheckEnvironment( Entity& ent1,  Entity& ent2)
+{
+    SDL_Rect rect1 = ent1.GetRect();
+    SDL_Rect rect2 = ent2.GetRect();
+    
+    if(SDL_HasIntersection(&rect1, &rect2) && ent2.GetPassable())
+    {
+        return true;
+    }else{
+        return false;
     }
 }
 

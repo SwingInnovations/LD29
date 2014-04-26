@@ -25,6 +25,8 @@ public:
     GameWindow();
     void Init(const std::string &title, const int WIDTH, const int HEIGHT);
     void PopulateWorld(unsigned int TileAmtX, unsigned int TileAmtY);
+    void PopulateEnemies(unsigned int num);
+    void PopulateReward(unsigned int num);
     void Update(SDL_Event e);
     void Render();
     void Quit();
@@ -34,6 +36,7 @@ public:
     
     bool GetCloseRequested(){return CloseRequested;}
     bool GetCompleteSuccess(){return CompleteSuccess;}
+    bool CheckEnvironment(Entity& ent1, Entity& ent2);
     SDL_Renderer* GetRenderer(){return m_Renderer;}
     
     unsigned int GetDelta(){return delta;}

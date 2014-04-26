@@ -85,6 +85,8 @@ public:
         
     }
     
+    int GetHealth(){return health;}
+    
     bool GetPassable(){return IsPassable;}
     bool GetValuable(){return IsValuable;}
     

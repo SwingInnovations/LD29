@@ -19,6 +19,8 @@ int main(int argc, char** argv) {
     std::cout << "Hello World!" << std::endl;
     game->Init(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT);
     game->PopulateWorld((int)(SCREEN_WIDTH * 3), (int)(SCREEN_HEIGHT * 3));
+    game->PopulateEnemies(5);
+    game->PopulateReward(7);
     while(IsRunning)
     {
         SDL_Event e;
