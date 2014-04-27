@@ -28,6 +28,7 @@ public:
     void SetPosX(float x){position.SetX(x); rect.x = x;}
     void SetPosY(float y){position.SetY(y); rect.y = y;}
     void SetPassable(bool pass){this->IsPassable = pass;}
+    void SetOnGround(bool ground){this->OnGround = ground;}
     void SetHealth(int h){this->health = h;}
     void SetImage(SDL_Texture* source){image = source;}
     void SetValuable(bool val){this->IsValuable = val;}
@@ -89,7 +90,7 @@ public:
     
     bool GetPassable(){return IsPassable;}
     bool GetValuable(){return IsValuable;}
-    
+    bool GetGroundStatus(){return OnGround;}
     bool Intersected(Entity &other)
     {
         return SDL_HasIntersection(&this->rect, &other.rect);

@@ -60,12 +60,15 @@ private:
     
     bool CloseRequested, CompleteSuccess, GameOver, GamePlay, MenuScreen, HelpScreen;
     std::vector<Ground*> BlocksY;
+    std::vector<Entity*> Worm_DetectionField;
+    std::vector<Entity*> Lizard_DetectionField;
     std::vector<Entity*> Worms;
     std::vector<Entity*> LizardWorms;
     std::vector<Entity*> Reward;
     Entity* player; //Player
     Entity* playerFoot;
-    
+    Entity* powerDrill;
+    std::vector<Entity*> pipeBomb;
 
 };
 
